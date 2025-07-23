@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Responsive Calendar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    #currentDateTime {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    #calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      max-width: 400px;
+      width: 100%;
+    }
+    .day {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      border-radius: 4px;
+    }
+    .booked {
+      background: #f77;
+      color: #fff;
+    }
+    .today {
+      background: #4caf50;
+      color: #fff;
+    }
+    .controls {
+      margin: 10px;
+    }
+    button {
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="currentDateTime"></div>
+  <div class="controls">
+    <button id="prevMonth">Previous</button>
+    <span id="monthYear"></span>
+    <button id="nextMonth">Next</button>
+  </div>
+  <div id="calendar"></div>
+
+  <script>
+    const currentDateTime = document.getElementById('currentDateTime');
+    const calendar = document.getElementById('calendar');
+    const monthYear = document.getElementById('monthYear');
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+
+    function updateDateTime() {
+      const now = new Date();
+      currentDateTime.innerText = now.toLocaleString();
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    function generateCalendar(month, year) {
+      calendar.innerHTML = '';
+      const firstDay = new Date(year, month).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const bookedDays = [5, 12, 20]; // Example booked days
+
+      monthYear.innerText = `${new Date(year, month).toLocaleString('default', { month: 'long' })} ${year}`;
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        calendar.appendChild(empty);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'day';
+        dayEl.innerText = day;
+
+        if (
+          day === today.getDate() &&
+          month === today.getMonth() &&
+          year === today.getFullYear()
+        ) {
+          dayEl.classList.add('today');
+        }
+
+        if (bookedDays.includes(day)) {
+          dayEl.classList.add('booked');
+        }
+
+        calendar.appendChild(dayEl);
+      }
+    }
+
+    prevMonthBtn.addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      generateCalendar(currentMonth, currentYear);
+    });
+
+    nextMonthBtn.addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      generateCalendar(currentMonth, currentYear);
+    });
+
+    generateCalendar(currentMonth, currentYear);
+  </script>
+</body>
+</html>
